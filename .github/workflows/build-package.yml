@@ -1,0 +1,34 @@
+name: Test Workflow on Branch
+
+on:
+  push:
+    branches:
+      - test-build
+
+jobs:
+  test-build-on-branch:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bookworm
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          apt-get -y update
+          apt-get -y install gradle default-jre-headless
+
+      - name: Build Package
+        run: |
+          ./gradlew :distribution:packages:oss-no-jdk-deb:assemble \
+            -Dbuild.docker=false \
+            -Dbuild.snapshot=false \
+            -Dlicense.key=/dev/null
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: deb-packages
+          path: distribution/packages/deb/build/distributions
+          retention-days: 1

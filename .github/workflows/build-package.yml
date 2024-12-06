@@ -19,6 +19,15 @@ jobs:
           apt-get -y update
           apt-get -y install gradle default-jre-headless
 
+      - name: Set JAVA_HOME
+        run: |
+          export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+          export PATH="$JAVA_HOME/bin:$PATH"
+
+      - name: Verify Java Installation
+        run: |
+          java -version
+
       - name: Build Package
         run: |
           ./gradlew :distribution:packages:oss-no-jdk-deb:assemble \

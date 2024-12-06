@@ -17,7 +17,15 @@ jobs:
       - name: Install Dependencies
         run: |
           apt-get -y update
-          apt-get -y install gradle default-jre-headless
+          apt-get -y install curl wget unzip openjdk-17-jdk-headless
+
+      - name: Download and Install Latest Gradle
+        run: |
+          LATEST_GRADLE_URL=$(curl -s https://gradle.org/releases/ | grep -oP '(?<=href=")[^"]*bin.zip' | head -1)
+          wget $LATEST_GRADLE_URL -O gradle-latest-bin.zip
+          unzip gradle-latest-bin.zip -d /opt/gradle
+          GRADLE_DIR=$(ls /opt/gradle)
+          ln -s /opt/gradle/$GRADLE_DIR/bin/gradle /usr/bin/gradle
 
       - name: Set JAVA_HOME
         run: |
